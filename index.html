@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>فيلا 23 | التحويلات البنكية للمشروع</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* شاشة البدء - لون أزرق قرمزي داكن جاد */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #0a0f1a 0%, #05080f 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeInOut 3s ease-in-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; visibility: visible; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        .logo-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(15px);
+            animation: textFadeSlide 0.4s ease-out 0.1s forwards, textFadeOut 0.3s ease-in 2.7s forwards;
+        }
+
+        @keyframes textFadeSlide {
+            0% { opacity: 0; transform: translateY(15px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes textFadeOut {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-5px); }
+        }
+
+        .welcome-logo {
+            width: 280px;
+            height: auto;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-logo {
+                width: 200px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .welcome-logo {
+                width: 350px;
+            }
+        }
+
+        /* التطبيق الرئيسي */
+        body {
+            background: #031012;
+            font-family: 'IBM Plex Sans Arabic', 'Segoe UI', 'Tahoma', sans-serif;
+            font-weight: 500;
+            padding: 1rem;
+            color: #EAF5F2;
+            font-variant-numeric: lining-nums;
+            font-feature-settings: "ss02";
+        }
+
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            opacity: 0;
+            animation: contentFadeIn 0.5s ease-out 3s forwards;
+        }
+
+        @keyframes contentFadeIn {
+            to { opacity: 1; }
+        }
+
+        /* الهيدر مع توسيط */
+        .main-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #1C554B;
+            padding-bottom: 0.8rem;
+        }
+        .main-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background: linear-gradient(135deg, #FFE6B0, #2BBF9F);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+        .main-header p {
+            color: #8DCBBF;
+            font-size: 1rem;
+            margin-top: 0.3rem;
+            font-weight: 500;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        /* كارت إحصائي واحد */
+        .stats-single {
+            margin-bottom: 1.8rem;
+        }
+
+        .stat-card-single {
+            background: #061D24;
+            border-radius: 10px;
+            padding: 1.2rem 0.8rem;
+            text-align: center;
+            border: 1px solid #1A6055;
+            transition: 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .stat-card-single:hover {
+            border-color: #3FE0C0;
+            background: #082F38;
+            transform: translateY(-2px);
+        }
+
+        .stat-label-single {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #AEE6DC;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .stat-number-single {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #2BBF9F;
+            line-height: 1.2;
+            direction: ltr;
+            display: block;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .stat-sub {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #6ECFB9;
+            display: block;
+            margin-top: 0.35rem;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        /* نافذة منبثقة داخلية (مودال) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .modal-container {
+            background: #0A1E24;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2BBF9F;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+        
+        .modal-header {
+            background: #0E3D3F;
+            padding: 1rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2BBF9F;
+        }
+        
+        .modal-header h3 {
+            color: #F5D97A;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: #E0F2F0;
+            font-size: 1.8rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            line-height: 1;
+            padding: 0 0.5rem;
+        }
+        
+        .close-modal:hover {
+            color: #FF9F7C;
+            transform: scale(1.1);
+        }
+        
+        .modal-body {
+            padding: 1.2rem;
+            overflow-y: auto;
+            max-height: 65vh;
+        }
+        
+        /* ملخص الفئة داخل النافذة */
+        .category-summary {
+            background: linear-gradient(135deg, #0E2D35, #08232A);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            border: 1px solid #2BBF9F;
+        }
+        
+        .category-summary .summary-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #AEE6DC;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+        
+        .category-summary .summary-amount {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2BBF9F;
+            direction: ltr;
+        }
+        
+        .category-summary .summary-count {
+            font-size: 0.8rem;
+            color: #6ECFB9;
+            margin-top: 0.25rem;
+        }
+        
+        .filtered-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.8rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-left: 0.2rem;
+        }
+        
+        .filtered-card {
+            background: #081C22;
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid #1C554B;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+        
+        .filtered-card .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        
+        .filtered-amount {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #F5D97A;
+            direction: ltr;
+        }
+        
+        .filtered-date {
+            background: #05262B;
+            padding: 0.15rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: monospace;
+        }
+        
+        .filtered-desc {
+            font-size: 0.85rem;
+            color: #DCF9F2;
+            text-align: center;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #AEE6DC;
+        }
+
+        /* شبكة الكروت الرئيسية */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.9rem;
+        }
+
+        /* تحسين للشاشات المتوسطة فأكبر */
+        @media (min-width: 640px) {
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+            body {
+                padding: 1.5rem;
+            }
+            .stat-number-single {
+                font-size: 2.5rem;
+            }
+            .main-header h1 {
+                font-size: 2rem;
+            }
+            .filtered-cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .cards-grid {
+                gap: 1rem;
+            }
+        }
+
+        /* الكارت */
+        .transfer-card {
+            background: #081C22;
+            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            transition: all 0.2s ease;
+            border: 1px solid #1C554B;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .transfer-card:hover {
+            border-color: #3FE0C0;
+            background: #0A2830;
+            transform: translateY(-2px);
+        }
+
+        /* رأس الكارت */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.4rem;
+        }
+
+        .serial-number {
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: #0E3D3F;
+            padding: 0.15rem 0.6rem;
+            border-radius: 4px;
+            color: #FADF8A;
+            direction: ltr;
+            font-family: 'IBM Plex Sans Arabic', monospace;
+            border: 1px solid #2F8B7A;
+        }
+
+        .amount-top {
+            text-align: center;
+            direction: ltr;
+            flex: 1;
+        }
+
+        .amount-value-large {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #F5D97A;
+            line-height: 1.2;
+            letter-spacing: -0.2px;
+            direction: ltr;
+            display: inline-block;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .desc-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #DCF9F2;
+            line-height: 1.35;
+            word-break: break-word;
+            padding: 0.2rem 0;
+            border-right: 2px solid #2BBF9F;
+            padding-right: 0.5rem;
+            text-align: center;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.1rem;
+        }
+
+        .date-value {
+            font-family: 'IBM Plex Sans Arabic', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: #05262B;
+            padding: 0.15rem 0.6rem;
+            border-radius: 6px;
+            direction: ltr;
+            color: #BDEADF;
+            display: inline-block;
+        }
+        
+        /* الفئة - تصميم زجاجي ولامع */
+        .category-value {
+            font-family: 'IBM Plex Sans Arabic', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            background: rgba(5, 38, 43, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            direction: rtl;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 1px solid rgba(43, 191, 159, 0.5);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            letter-spacing: 0.3px;
+        }
+        
+        .category-value:hover {
+            background: rgba(43, 191, 159, 0.25);
+            border-color: #5CE6C8;
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(43, 191, 159, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+        
+        .category-value:active {
+            transform: scale(0.98);
+        }
+
+        .file-button {
+            background: #102F32;
+            border: 1px solid #2D9B87;
+            color: #C3FFF0;
+            padding: 0.4rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            width: 100%;
+            margin-top: 0.15rem;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .file-button:hover {
+            background: #1B5957;
+            border-color: #5CE6C8;
+            transform: scale(0.98);
+        }
+
+        .footer-company {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            background: #07232A;
+            padding: 0.8rem;
+            border-radius: 10px;
+            color: #C3F2E8;
+            border-top: 1px solid #1D6559;
+            font-weight: 600;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        /* تحسينات للجوال */
+        @media (max-width: 480px) {
+            body {
+                padding: 0.8rem;
+            }
+            .stat-number-single {
+                font-size: 1.8rem;
+            }
+            .amount-value-large {
+                font-size: 1.6rem;
+            }
+            .desc-value {
+                font-size: 1rem;
+            }
+            .serial-number {
+                font-size: 0.9rem;
+                padding: 0.2rem 0.65rem;
+            }
+            .date-value, .category-value {
+                font-size: 0.85rem;
+                padding: 0.2rem 0.7rem;
+            }
+            .file-button {
+                font-size: 0.8rem;
+            }
+            .modal-header h3 {
+                font-size: 1rem;
+            }
+            .category-summary .summary-amount {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .amount-value-large {
+                font-size: 1.4rem;
+            }
+            .desc-value {
+                font-size: 0.95rem;
+            }
+        }
+        
+        /* تخصيص شريط التمرير للنافذة */
+        .filtered-cards-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+        .filtered-cards-grid::-webkit-scrollbar-track {
+            background: #03181C;
+            border-radius: 4px;
+        }
+        .filtered-cards-grid::-webkit-scrollbar-thumb {
+            background: #2BBF9F;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة البدء -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="logo-wrapper">
+            <svg class="welcome-logo" viewBox="0 0 300 380" xmlns="http://www.w3.org/2000/svg">
+                <path d="M70 260 L118 230 L118 340 L70 340 Z" fill="#E8F5F2" />
+                <path d="M132 90 L170 66 L208 90 L208 130 L182 114 L182 340 L154 340 L154 204 L132 218 Z" fill="#E8F5F2" />
+                <path d="M214 160 L262 190 L262 246 L236 228 L236 340 L214 340 Z" fill="#E8F5F2" />
+                <path d="M274 248 L292 266 L292 340 L274 340 Z" fill="#E8F5F2" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- التطبيق الرئيسي -->
+    <div class="main-content">
+        <div class="app-container">
+            <div class="main-header">
+                <h1>مشروع فيلا 23</h1>
+                <p>عرض التحويلات البنكية للمشروع</p>
+            </div>
+
+            <!-- كارت إحصائي واحد -->
+            <div class="stats-single" id="statsSingle"></div>
+
+            <!-- كروت التحويلات الرئيسية -->
+            <div class="cards-grid" id="transfersGrid"></div>
+            
+            <!-- تذييل -->
+            <div class="footer-company">
+                شركة سكني للمقاولات العامة والعقارات
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة منبثقة -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">تصفية حسب الفئة</h3>
+                <button class="close-modal" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            if (welcomeScreen && welcomeScreen.parentNode) {
+                welcomeScreen.remove();
+            }
+        }, 3100);
+
+        // البيانات الجديدة للتحويلات البنكية
+        const bankTransfers = [
+
+            { id: 1, date: "2026-05-20", amount: 14731, description: "فواتير مشتريات", category: "مصروفات متفرقة" },
+            { id: 2, date: "2026-05-20", amount: 5000, description: "اعمال حداده وسقالات", category: "رخام الواجهات" },
+            { id: 3, date: "2026-05-20", amount: 800, description: "قص رخام للواجهات", category: "رخام الواجهات" },
+            { id: 4, date: "2026-05-17", amount: 15000, description: "دفعه لاعمال الحجر", category: "رخام الواجهات" },
+            { id: 5, date: "2026-05-16", amount: 50000, description: "دفعه لاعمال التكييف", category: "التكييف" },
+            { id: 6, date: "2026-05-13", amount: 3080, description: "قيمة فلنجات وتيوبات", category: "رخام الواجهات" },
+            { id: 7, date: "2026-05-12", amount: 5000, description: "دفعه لاعمال البلاط", category: "البلاط" },
+            { id: 8, date: "2026-05-09", amount: 10000, description: "دفعه لاعمال الجبس البلدي", category: "جبس بلدي" },
+            { id: 9, date: "2026-05-07", amount: 5000, description: "تركيب حداده وسقالات", category: "رخام الواجهات" },
+            { id: 10, date: "2026-05-06", amount: 3245.73, description: "بلاط حمام عينه", category: "البلاط" },
+            { id: 11, date: "2026-05-06", amount: 350, description: "فلنجات", category: "رخام الواجهات" },
+            { id: 12, date: "2026-05-06", amount: 560, description: "فلنجات", category: "رخام الواجهات" },
+            { id: 13, date: "2026-04-28", amount: 11430.43, description: "رخام المطبخ", category: "البلاط" },
+            { id: 14, date: "2026-04-27", amount: 350, description: "فلنجات", category: "رخام الواجهات" },
+            { id: 15, date: "2026-04-27", amount: 2300, description: "تيوبات بوابات الرخام", category: "رخام الواجهات" },
+            { id: 16, date: "2026-04-20", amount: 2210, description: "فاتورة الزنك الخارجي تم تحويلها من الوالد", category: "شراء الأرض وتجهيزها والخدمات" },
+            { id: 17, date: "2026-04-20", amount: 8250, description: "الدفعه النهائيه للتصميم الداخلي", category: "مصروفات متفرقة" },
+            { id: 18, date: "2026-04-19", amount: 5000, description: "دفعه لمعلم الجبس", category: "الجبس" },
+            { id: 19, date: "2026-04-19", amount: 1795, description: "ايجار سقالات", category: "رخام الواجهات" },
+            { id: 20, date: "2026-04-19", amount: 5000, description: "دفعه لاعمال البلاط", category: "البلاط" },
+            { id: 21, date: "2026-04-16", amount: 15000, description: "دفعه لمعلم الحجر", category: "رخام الواجهات" },
+            { id: 22, date: "2026-04-16", amount: 10000, description: "دفعه لمعلم الجبس البلدي", category: "جبس بلدي" },
+            { id: 23, date: "2026-04-12", amount: 56302, description: "شراء رخام الواجهات", category: "رخام الواجهات" },
+            { id: 24, date: "2026-04-12", amount: 350, description: "تنزيل حجر", category: "رخام الواجهات" },
+            { id: 25, date: "2026-04-12", amount: 9826, description: "مشتريات متفرقه", category: "مصروفات متفرقة" },
+            { id: 26, date: "2026-04-12", amount: 4000, description: "اعمال حداده وسقالات", category: "رخام الواجهات" },
+            { id: 27, date: "2026-04-08", amount: 5000, description: "دفعه لاعمال الحجر", category: "رخام الواجهات" },
+            { id: 28, date: "2026-03-29", amount: 84900, description: "دفعه للبلجيكي للحجر", category: "رخام الواجهات" },
+            { id: 29, date: "2026-03-09", amount: 14850, description: "مصنعيات إبراهيم", category: "المقاولأت" },
+            { id: 30, date: "2026-03-09", amount: 3696, description: "اكسسوارات تركيب حجر", category: "رخام الواجهات" },
+            { id: 31, date: "2026-03-09", amount: 400, description: "شيول تكسير الرصيف", category: "حفر والدفن والمعدات" },
+            { id: 32, date: "2026-03-06", amount: 5000, description: "حدادة ودهان الواجهة", category: "رخام الواجهات" },
+            { id: 33, date: "2026-03-04", amount: 10000, description: "دفعه لمعلم الحجر", category: "رخام الواجهات" },
+            { id: 34, date: "2026-02-25", amount: 1006, description: "قيمة فلنجات", category: "رخام الواجهات" },
+            { id: 35, date: "2026-02-23", amount: 29961, description: "اكسسوارات تركيب حجر", category: "رخام الواجهات" },
+            { id: 36, date: "2026-02-21", amount: 800, description: "قيمة ردود مياه", category: "الماء والرمل" },
+            { id: 37, date: "2026-02-21", amount: 550, description: "بوبكات تنظيف الحوش", category: "حفر والدفن والمعدات" },
+            { id: 38, date: "2026-02-21", amount: 4000, description: "اعمال السقالات وعزل الواجهات", category: "رخام الواجهات" },
+            { id: 39, date: "2026-02-21", amount: 8261, description: "فواتير مشتريات كهرباء", category: "الكهرباء" },
+            { id: 40, date: "2026-02-16", amount: 10000, description: "دفعه للميليس", category: "اللياسه" },
+            { id: 41, date: "2026-02-16", amount: 5500.50, description: "شراء جبس", category: "الجبس" },
+            { id: 42, date: "2026-02-11", amount: 12375, description: "تقفيل اعمال المباني", category: "البناء" },
+            { id: 43, date: "2026-02-11", amount: 2115, description: "شراء فلنجات وتيوبات للواجهة", category: "رخام الواجهات" },
+            { id: 44, date: "2026-02-07", amount: 350, description: "ونش انزال حجر", category: "رخام الواجهات" },
+            { id: 45, date: "2026-02-04", amount: 16079, description: "مشتريات لياسة", category: "مواد اللياسه" },
+            { id: 46, date: "2026-02-03", amount: 11000, description: "دفعه لشراء المطبخ", category: "اللامنيوم ,مطابخ" },
+            { id: 47, date: "2026-02-03", amount: 40000, description: "دفعه للمكيفات الواصل 180الف", category: "التكييف" },
+            { id: 48, date: "2026-02-01", amount: 3000, description: "دفعه للدهان المتفق 8 ريال للمتر", category: "الدهان" },
+            { id: 49, date: "2026-02-01", amount: 5000, description: "دفعه للكهربائي", category: "الكهرباء" },
+            { id: 50, date: "2026-02-01", amount: 5000, description: "دفعه للجبس المتفق 45للمتر", category: "الجبس" },
+            { id: 51, date: "2026-01-28", amount: 10780, description: "كيابل 16 و25", category: "الكهرباء" },
+            { id: 52, date: "2026-01-24", amount: 1045, description: "شراء امازايكو", category: "البلاط" },
+            { id: 53, date: "2026-01-21", amount: 6900, description: "تكمله كيابل المكيفات", category: "الكهرباء" },
+            { id: 54, date: "2026-01-20", amount: 9257, description: "مشتريات كهرباء", category: "الكهرباء" },
+            { id: 55, date: "2026-01-18", amount: 15000, description: "دفعه لاعمال اللياسه", category: "اللياسه" },
+            { id: 56, date: "2026-01-18", amount: 8578.25, description: "اعمال عزل", category: "العزل" },
+            { id: 57, date: "2026-01-14", amount: 7850, description: "مشتريات لياسه", category: "مواد اللياسه" },
+            { id: 58, date: "2026-01-13", amount: 5000, description: "دفعه لاعمال البلاط المتفق 22 للمتر", category: "البلاط" },
+            { id: 59, date: "2026-01-11", amount: 10408, description: "مشتريات جبس", category: "الجبس" },
+            { id: 60, date: "2026-01-06", amount: 10400, description: "قيمه 400متر كيابل", category: "الكهرباء" },
+            { id: 61, date: "2026-01-06", amount: 16945.20, description: "مشتريات كهرباء", category: "الكهرباء" },
+            { id: 62, date: "2026-01-05", amount: 8320, description: "تكملة بلاط السطوح", category: "البلاط" },
+            { id: 63, date: "2026-01-04", amount: 1940, description: "عازل الصرف", category: "العزل" },
+            { id: 64, date: "2026-01-03", amount: 2430, description: "بلاط السطوح", category: "البلاط" },
+            { id: 65, date: "2025-12-31", amount: 20000, description: "دفعه من توريدات السباكة", category: "السباكة" },
+            { id: 66, date: "2025-12-31", amount: 10700.01, description: "شراء سيراميك", category: "البلاط" },
+            { id: 67, date: "2025-12-29", amount: 10000, description: "دفعه من اعمال عزل الاسطح", category: "العزل" },
+            { id: 68, date: "2025-12-28", amount: 1000, description: "قيمة ١٠ وايت", category: "الماء والرمل" },
+            { id: 69, date: "2025-12-27", amount: 2965, description: "مشتريات لياسه", category: "مواد اللياسه" },
+            { id: 70, date: "2025-12-27", amount: 70000, description: "دفعه 2 لاعمال التكييف", category: "التكييف" },
+            { id: 71, date: "2025-12-13", amount: 87000, description: "دفعه لتوريد الحجر", category: "رخام الواجهات" },
+            { id: 72, date: "2025-12-11", amount: 13221, description: "قيمة فواتير بلوك", category: "البلوك والطوب" },
+            { id: 73, date: "2025-12-09", amount: 15000, description: "لياسة دفعه الواصل 45000", category: "اللياسه" },
+            { id: 74, date: "2025-12-09", amount: 10000, description: "اخر دفعه لاعمال السباكه", category: "السباكة" },
+            { id: 75, date: "2025-11-28", amount: 15565, description: "فواتير مشتريات لياسة", category: "مواد اللياسه" },
+            { id: 76, date: "2025-11-22", amount: 10000, description: "لياسة دفعه", category: "اللياسه" },
+            { id: 77, date: "2025-11-18", amount: 8250, description: "دفعه أولى للمصممه المتفق 16500", category: "شراء الأرض وتجهيزها والخدمات" },
+            { id: 78, date: "2025-11-16", amount: 48323, description: "مشتريات أدوات تأسيس سباكة", category: "السباكة" },
+            { id: 79, date: "2025-11-16", amount: 57584, description: "توريد حديد تقفيل حساب", category: "الحديد" },
+            { id: 80, date: "2025-11-11", amount: 70000, description: "دفعه لشركة غسان تأسيس المكيفات", category: "التكييف" },
+            { id: 81, date: "2025-11-10", amount: 5000, description: "دفعه للكهربائي 3", category: "الكهرباء" },
+            { id: 82, date: "2025-11-05", amount: 1000, description: "10 وايت مياه", category: "الماء والرمل" },
+            { id: 83, date: "2025-11-05", amount: 82000, description: "قيمة المصعد لشركة زين", category: "المصاعد" },
+            { id: 84, date: "2025-11-03", amount: 16033, description: "قيمة اسمنت ورمل ومشتريات لياسه", category: "مواد اللياسه" },
+            { id: 85, date: "2025-10-30", amount: 5000, description: "دفعه 3 للسباك", category: "السباكة" },
+            { id: 86, date: "2025-10-30", amount: 10000, description: "دفعه 3 للمليس", category: "اللياسه" },
+            { id: 87, date: "2025-10-23", amount: 60000, description: "تقفيل الخرسانه بدون اسوار", category: "توريد الخرسانه" },
+            { id: 88, date: "2025-10-23", amount: 5000, description: "دفعه 2 للسباك", category: "السباكة" },
+            { id: 89, date: "2025-10-23", amount: 5000, description: "دفعه 6 للبناء", category: "البناء" },
+            { id: 90, date: "2025-10-20", amount: 3000, description: "استشارة البلجيكي", category: "مصروفات متفرقة" },
+            { id: 91, date: "2025-10-19", amount: 5000, description: "دفعه 2 مليس", category: "اللياسه" },
+            { id: 92, date: "2025-10-14", amount: 9540, description: "مشتريات لياسة", category: "مواد اللياسه" },
+            { id: 93, date: "2025-10-14", amount: 7000, description: "قيمة التصميم الانشائي وتكاليف المكتب الهندسي", category: "شراء الأرض وتجهيزها والخدمات" },
+            { id: 94, date: "2025-10-14", amount: 5000, description: "دفعه أولى لاعمال السباكة المتفق(25الف)", category: "السباكة" },
+            { id: 95, date: "2025-10-11", amount: 5000, description: "دفعه كهرباء رقم اثنين", category: "الكهرباء" },
+            { id: 96, date: "2025-10-11", amount: 5000, description: "دفعه مليس أولى", category: "اللياسه" },
+            { id: 97, date: "2025-10-11", amount: 5000, description: "دفعه اخيره للبناء", category: "البناء" },
+            { id: 98, date: "2025-10-09", amount: 650, description: "بوبكات حول المسبح", category: "حفر والدفن والمعدات" },
+            { id: 99, date: "2025-10-03", amount: 16886, description: "مشتريات كهرباء", category: "الكهرباء" },
+            { id: 100, date: "2025-10-02", amount: 5000, description: "دفعه اولى للكهرباء", category: "الكهرباء" },
+            { id: 101, date: "2025-09-29", amount: 500, description: "قيمة 5 وايت مياه", category: "الماء والرمل" },
+            { id: 102, date: "2025-09-29", amount: 1750, description: "قيمة 7 تريلات دفان لمنطقة المسبح", category: "الماء والرمل" },
+            { id: 103, date: "2025-09-29", amount: 900, description: "قيمة 18 ساعه بوبكات", category: "حفر والدفن والمعدات" },
+            { id: 104, date: "2025-09-24", amount: 8190, description: "مشتريات للمباني", category: "البلوك والطوب" },
+            { id: 105, date: "2025-09-14", amount: 10830, description: "قيمة بلوك", category: "البلوك والطوب" },
+            { id: 106, date: "2025-09-09", amount: 5000, description: "دفعه اعمال المباني", category: "البناء" },
+            { id: 107, date: "2025-08-30", amount: 4500, description: "قيمة بلوك", category: "البلوك والطوب" },
+            { id: 108, date: "2025-08-30", amount: 5000, description: "دفعه اعمال المباني", category: "البناء" },
+            { id: 109, date: "2025-08-22", amount: 500, description: "5 وايت", category: "الماء والرمل" },
+            { id: 110, date: "2025-08-22", amount: 9690, description: "قيمة بلوك", category: "البلوك والطوب" },
+            { id: 111, date: "2025-08-22", amount: 8376, description: "عوازل وهوردي", category: "البلوك والطوب" },
+            { id: 112, date: "2025-08-15", amount: 9138, description: "مشتريات اعمال المباني", category: "البناء" },
+            { id: 113, date: "2025-08-13", amount: 10590, description: "قيمة بلوك", category: "البلوك والطوب" },
+            { id: 114, date: "2025-08-13", amount: 5000, description: "دفعه اعمال المباني", category: "البناء" },
+            { id: 115, date: "2025-07-27", amount: 5000, description: "دفعه اعمال المباني", category: "البناء" },
+            { id: 116, date: "2025-07-24", amount: 13965, description: "قيمة بلوك", category: "البلوك والطوب" },
+            { id: 117, date: "2025-07-07", amount: 600, description: "6 وايت مياه", category: "الماء والرمل" },
+            { id: 118, date: "2025-07-03", amount: 100000, description: "دفعه خرسانه", category: "توريد الخرسانه" },
+            { id: 119, date: "2025-06-24", amount: 3864, description: "قيمة هوردي بولسترين للدور الاخير", category: "مصروفات متفرقة" },
+            { id: 120, date: "2025-06-21", amount: 10000, description: "دفعه لاعمال المسبح", category: "مصروفات متفرقة" },
+            { id: 121, date: "2025-06-04", amount: 5000, description: "تخصم من المصنعيات مشتريات مسامير وأدوات نجاره", category: "مصروفات متفرقة" },
+            { id: 2025, date: "٥تريلات دفان جول المسبح", amount: 1400, description: "قيمه", category: "حفر والدفن والمعدات" },
+            { id: 123, date: "2025-06-04", amount: 825, description: "قيمة ١١ ساعة شيول", category: "حفر والدفن والمعدات" },
+            { id: 124, date: "2025-05-29", amount: 1000, description: "قيمة بوكلين توسعه المسبح", category: "حفر والدفن والمعدات" },
+            { id: 125, date: "2025-05-25", amount: 5602, description: "بولسترين لسقف الاول", category: "البلوك والطوب" },
+            { id: 126, date: "2025-05-10", amount: 4224, description: "شراء بلوك 1320 هوردي", category: "البلوك والطوب" },
+            { id: 127, date: "2025-05-10", amount: 4395, description: "شراء بولسترين", category: "البلوك والطوب" },
+            { id: 128, date: "2025-05-07", amount: 150000, description: "دفعه للحديد", category: "الحديد" },
+            { id: 129, date: "2025-05-06", amount: 5250, description: "مشتريات قمط تخصم من مصنعيات ابراهيم", category: "مصروفات متفرقة" },
+            { id: 130, date: "2025-05-04", amount: 850, description: "برميل بوتيمين عزل الميده", category: "العزل" },
+            { id: 131, date: "2025-04-30", amount: 5000, description: "حصن المندي تخصم من المصنعيات", category: "مصروفات متفرقة" },
+            { id: 132, date: "2025-04-25", amount: 1000, description: "قيمة 10 تريلا مياه", category: "الماء والرمل" },
+            { id: 133, date: "2025-04-13", amount: 7000, description: "قيمة اعمال دفان ودك وشيول", category: "حفر والدفن والمعدات" },
+            { id: 134, date: "2025-04-06", amount: 5000, description: "مطعم حصن المندي تخصم من المصنعيات", category: "مصروفات متفرقة" },
+            { id: 2025, date: "وقيمه 15تريلا دفان", amount: 10250, description: "شيول بوبكات ومدحله لدفان البدروم والرقاب الخارجيه", category: "حفر والدفن والمعدات" },
+            { id: 136, date: "2025-03-23", amount: 5400, description: "20 رد دفنيه لدفان البدرو وحول الخزا", category: "حفر والدفن والمعدات" },
+            { id: 137, date: "2025-03-20", amount: 250, description: "ونش انزال بوبكات", category: "مصروفات متفرقة" },
+            { id: 138, date: "2025-03-20", amount: 581, description: "شراء ادوات كهرباء", category: "مصروفات متفرقة" },
+            { id: 139, date: "2025-03-19", amount: 3000, description: "معدات حفر ودفان للبدروم", category: "حفر والدفن والمعدات" },
+            { id: 140, date: "2025-03-18", amount: 4050, description: "تم تحويل قيمة ٣٠٠٠ بلوك بالغلط لنسيم", category: "البلوك والطوب" },
+            { id: 141, date: "2025-03-14", amount: 2550, description: "عزل بيتومين", category: "العزل" },
+            { id: 142, date: "2025-03-11", amount: 4050, description: "3000بلوكه مباني الخزان الارضي والبياره والسور من اسفل", category: "البلوك والطوب" },
+            { id: 143, date: "2025-03-07", amount: 2550, description: "عزل بيتومين", category: "العزل" },
+            { id: 144, date: "2025-03-01", amount: 530, description: "مشتريات اناره", category: "مصروفات متفرقة" },
+            { id: 145, date: "2025-02-25", amount: 8100, description: "عصافير زواجين تخصم من ابراهيم", category: "مصروفات متفرقة" },
+            { id: 146, date: "2025-02-24", amount: 2805, description: "بنا 3300بلوكه الخزان السور البياره", category: "البناء" },
+            { id: 147, date: "2025-02-23", amount: 4829, description: "اعمال عزل الخزان", category: "العزل" },
+            { id: 148, date: "2025-02-21", amount: 810, description: "عدد 60كيس أسمنت", category: "الأسمنت بانوعه" },
+            { id: 149, date: "2025-02-21", amount: 550, description: "550ريال تريلا رمل", category: "الماء والرمل" },
+            { id: 150, date: "2025-02-12", amount: 115, description: "تعديل بيانات التامين", category: "تعديلات" },
+            { id: 151, date: "2025-02-11", amount: 1126, description: "تعديل الرخصه", category: "تعديلات" },
+            { id: 152, date: "2025-02-10", amount: 460, description: "حاويات", category: "مصروفات متفرقة" },
+            { id: 153, date: "2025-02-06", amount: 6420.55, description: "سداد فاحص التامين", category: "التامين" },
+            { id: 154, date: "2025-01-27", amount: 13798.97, description: "سداد التامين", category: "التامين" },
+            { id: 155, date: "2024-12-03", amount: 22000, description: "قيمه اعمال تصميم الفيلا 23 للبلجيكي", category: "مصروفات متفرقة" },
+            { id: 156, date: "2024-11-29", amount: 3300, description: "دفعه لتصميم المنزل لشركة البلجيكي", category: "مصروفات متفرقة" },
+            { id: 2024, date: "أعمال حفر بالبدروم إضافيه (تعديلات", amount: 1405, description: "قيمه", category: "تعديلات" },
+            { id: 158, date: "2024-11-29", amount: 1560, description: "قيمه ترحيل ناتج حفر تعديلات بالبدروم", category: "تعديلات" },
+            { id: 159, date: "2024-11-29", amount: 3300, description: "دفعه ثانية اجمالي التصميم 25300", category: "مصروفات متفرقة" },
+            { id: 160, date: "2024-11-17", amount: 240, description: "مدحله تحت القواعد", category: "حفر والدفن والمعدات" },
+            { id: 161, date: "2024-10-09", amount: 100000, description: "دفعه للخرسانة", category: "توريد الخرسانه" },
+            { id: 162, date: "2024-10-09", amount: 100000, description: "دفعه للحديد", category: "الحديد" },
+            { id: 163, date: "2024-10-05", amount: 6240, description: "قيمة ترحيل 48 تريلا", category: "حفر والدفن والمعدات" },
+            { id: 164, date: "2024-10-05", amount: 3000, description: "تقفيل حساب حفر البوكلين", category: "حفر والدفن والمعدات" },
+            { id: 165, date: "2024-09-27", amount: 4030, description: "ترحيل31 تريلا", category: "حفر والدفن والمعدات" },
+            { id: 166, date: "2024-09-27", amount: 7000, description: "دفعه ثانية بوكلين", category: "حفر والدفن والمعدات" },
+            { id: 167, date: "2024-09-27", amount: 1810, description: "سور الزنك", category: "شراء الأرض وتجهيزها والخدمات" },
+            { id: 168, date: "2024-09-21", amount: 6110, description: "ترحيل 47 تريلا", category: "حفر والدفن والمعدات" },
+            { id: 169, date: "2024-09-15", amount: 3000, description: "دفعه للبوكلين", category: "حفر والدفن والمعدات" }
+        ];
+
+        // دالة لاستخراج الفئات الفريدة من البيانات
+        function getUniqueCategories() {
+            const categories = [...new Set(bankTransfers.map(t => t.category))];
+            return categories.sort();
+        }
+
+        function getCategoryColor(category) {
+            const colorMap = {
+                "رخام الواجهات": "#FFD966",
+                "البلاط": "#6CC9B0",
+                "التكييف": "#A5E0D4",
+                "جبس بلدي": "#8CD9CD",
+                "الجبس": "#CFBAE1",
+                "مصروفات متفرقة": "#B0E57C",
+                "شراء الأرض وتجهيزها والخدمات": "#F7B05E",
+                "المقاولأت": "#FF9F7C",
+                "حفر والدفن والمعدات": "#E0B3FF",
+                "الكهرباء": "#FFB347",
+                "اللياسه": "#6C91E8",
+                "البناء": "#A5D6FF",
+                "الحديد": "#8CD9CD",
+                "توريد الخرسانه": "#CFBAE1",
+                "السباكة": "#B0E57C",
+                "الماء والرمل": "#F7B05E",
+                "البلوك والطوب": "#FF9F7C",
+                "العزل": "#E0B3FF",
+                "الأسمنت بانواعه": "#FFD966",
+                "تعديلات": "#6CC9B0",
+                "التامين": "#A5E0D4",
+                "اللامنيوم ,مطابخ": "#8CD9CD",
+                "الدهان": "#CFBAE1",
+                "مواد اللياسه": "#B0E57C",
+                "المصاعد": "#F7B05E"
+            };
+            return colorMap[category] || "#2BBF9F";
+        }
+
+        function formatAmountInteger(amount) {
+            let integerPart = Math.floor(amount);
+            let formatted = integerPart.toLocaleString('en');
+            return `${formatted} SAR`;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return "—";
+            return dateString;
+        }
+
+        function calculateStats() {
+            const totalAmount = bankTransfers.reduce((sum, t) => sum + t.amount, 0);
+            const integerTotal = Math.floor(totalAmount);
+            const transferCount = bankTransfers.length;
+            return { total: integerTotal, count: transferCount };
+        }
+
+        function renderStats() {
+            const statsContainer = document.getElementById('statsSingle');
+            if (!statsContainer) return;
+            const { total, count } = calculateStats();
+            const formattedTotal = total.toLocaleString('en');
+
+            statsContainer.innerHTML = `
+                <div class="stat-card-single">
+                    <span class="stat-label-single">💰 إجمالي المبالغ المحولة</span>
+                    <div>
+                        <span class="stat-number-single">${formattedTotal} SAR</span>
+                        <span class="stat-sub">موزعة على ${count} حوالة</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getCategoryTotal(category) {
+            const filtered = bankTransfers.filter(t => t.category === category);
+            const total = filtered.reduce((sum, t) => sum + t.amount, 0);
+            return Math.floor(total);
+        }
+
+        function showFilteredByCategory(category) {
+            const modal = document.getElementById('categoryModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            const filteredTransfers = bankTransfers.filter(t => t.category === category);
+            const categoryTotal = getCategoryTotal(category);
+            const formattedTotal = categoryTotal.toLocaleString('en');
+            const categoryColor = getCategoryColor(category);
+            
+            modalTitle.innerHTML = `🏷️ فئة: ${category}`;
+            
+            if (filteredTransfers.length === 0) {
+                modalBody.innerHTML = '<div class="no-results">لا توجد تحويلات في هذه الفئة</div>';
+            } else {
+                const cardsHtml = filteredTransfers.map((transfer, idx) => {
+                    const formattedAmount = formatAmountInteger(transfer.amount);
+                    const formattedDate = formatDate(transfer.date);
+                    const catColor = getCategoryColor(transfer.category);
+                    return `
+                        <div class="filtered-card">
+                            <div class="row">
+                                <span class="filtered-amount">${formattedAmount}</span>
+                                <span class="filtered-date">${formattedDate}</span>
+                            </div>
+                            <div class="filtered-desc">${transfer.description}</div>
+                            <div class="row">
+                                <span style="background:#05262B; padding:0.1rem 0.5rem; border-radius:12px; color:${catColor}; font-size:0.7rem; font-weight:600;">🏷️ ${transfer.category}</span>
+                                <span style="font-size:0.65rem; color:#6ECFB9;">#${transfer.id}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                modalBody.innerHTML = `
+                    <div class="category-summary" style="border-color: ${categoryColor};">
+                        <div class="summary-label">📊 إجمالي مبالغ فئة ${category}</div>
+                        <div class="summary-amount">${formattedTotal} SAR</div>
+                        <div class="summary-count">${filteredTransfers.length} حوالة</div>
+                    </div>
+                    <div class="filtered-cards-grid">${cardsHtml}</div>
+                `;
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('categoryModal');
+            modal.classList.remove('active');
+        }
+
+        function renderTransferCards() {
+            const gridContainer = document.getElementById('transfersGrid');
+            if (!gridContainer) return;
+            gridContainer.innerHTML = '';
+
+            bankTransfers.forEach((transfer, idx) => {
+                const card = document.createElement('div');
+                card.className = 'transfer-card';
+                
+                const { date, amount, description, category, id } = transfer;
+                const formattedDate = formatDate(date);
+                const formattedAmount = formatAmountInteger(amount);
+                const serial = id;
+                const categoryColor = getCategoryColor(category);
+                
+                const cardHeader = document.createElement('div');
+                cardHeader.className = 'card-header';
+                
+                const amountDiv = document.createElement('div');
+                amountDiv.className = 'amount-top';
+                const amountSpan = document.createElement('span');
+                amountSpan.className = 'amount-value-large';
+                amountSpan.textContent = formattedAmount;
+                amountDiv.appendChild(amountSpan);
+                
+                const serialSpan = document.createElement('div');
+                serialSpan.className = 'serial-number';
+                serialSpan.textContent = `${serial}`;
+                
+                cardHeader.appendChild(amountDiv);
+                cardHeader.appendChild(serialSpan);
+                
+                const descDiv = document.createElement('div');
+                descDiv.className = 'desc-value';
+                descDiv.textContent = description;
+                
+                const bottomRow = document.createElement('div');
+                bottomRow.className = 'bottom-row';
+                
+                const dateSpan = document.createElement('span');
+                dateSpan.className = 'date-value';
+                dateSpan.textContent = formattedDate;
+                
+                const categorySpan = document.createElement('span');
+                categorySpan.className = 'category-value';
+                categorySpan.innerHTML = `🏷️ ${category}`;
+                categorySpan.style.color = categoryColor;
+                categorySpan.style.fontWeight = '700';
+                categorySpan.style.cursor = 'pointer';
+                categorySpan.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showFilteredByCategory(category);
+                });
+                
+                bottomRow.appendChild(dateSpan);
+                bottomRow.appendChild(categorySpan);
+                
+                const fileBtn = document.createElement('button');
+                fileBtn.className = 'file-button';
+                fileBtn.innerHTML = `📄 عرض ملف التحويل`;
+                fileBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    alert(`📁 ملف التحويل البنكي\nرقم العملية: #${serial}\nالتاريخ: ${formattedDate}\nالمبلغ: ${formattedAmount}\nالوصف: ${description}\nالفئة: ${category}\n(بيانات مشروع فيلا 23)`);
+                });
+                
+                card.appendChild(cardHeader);
+                card.appendChild(descDiv);
+                card.appendChild(bottomRow);
+                card.appendChild(fileBtn);
+                
+                gridContainer.appendChild(card);
+            });
+            
+            if (bankTransfers.length === 0) {
+                gridContainer.innerHTML = '<div style="background:#081C22; padding:1.5rem; border-radius:8px; text-align:center;">لا توجد تحويلات بنكية حالياً</div>';
+            }
+        }
+
+        function setupModalEvents() {
+            const modal = document.getElementById('categoryModal');
+            const closeBtn = document.getElementById('closeModalBtn');
+            
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+        }
+
+        function init() {
+            renderStats();
+            renderTransferCards();
+            setupModalEvents();
+        }
+        
+        init();
+    </script>
+
+</body>
+</html>
