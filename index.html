@@ -173,7 +173,7 @@
             font-family: 'IBM Plex Sans Arabic', sans-serif;
         }
 
-        /* نافذة منبثقة داخلية (مودال) */
+        /* نافذة منبثقة للفئة */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -247,6 +247,88 @@
             padding: 1.2rem;
             overflow-y: auto;
             max-height: 65vh;
+        }
+
+        /* نافذة منبثقة لعرض PDF */
+        .pdf-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .pdf-modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .pdf-modal-container {
+            background: #0A1E24;
+            border-radius: 16px;
+            width: 95%;
+            max-width: 1200px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2BBF9F;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .pdf-modal-header {
+            background: #0E3D3F;
+            padding: 0.8rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2BBF9F;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .pdf-modal-header h3 {
+            color: #F5D97A;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .close-pdf-modal {
+            background: none;
+            border: none;
+            color: #E0F2F0;
+            font-size: 1.8rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            line-height: 1;
+            padding: 0 0.5rem;
+        }
+
+        .close-pdf-modal:hover {
+            color: #FF9F7C;
+            transform: scale(1.1);
+        }
+
+        .pdf-iframe-container {
+            flex: 1;
+            padding: 0.5rem;
+            background: #031012;
+        }
+
+        .pdf-iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
         }
         
         /* ملخص الفئة داخل النافذة */
@@ -495,9 +577,9 @@
             background: #102F32;
             border: 1px solid #2D9B87;
             color: #C3FFF0;
-            padding: 0.4rem 0.6rem;
+            padding: 0.5rem 0.6rem;
             border-radius: 30px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
@@ -506,7 +588,7 @@
             justify-content: center;
             gap: 5px;
             width: 100%;
-            margin-top: 0.15rem;
+            margin-top: 0.25rem;
             font-family: 'IBM Plex Sans Arabic', sans-serif;
             text-decoration: none;
         }
@@ -522,16 +604,16 @@
             background: #1A1F2A;
             border: 1px solid #4A3A2A;
             color: #B89A7A;
-            padding: 0.4rem 0.6rem;
+            padding: 0.5rem 0.6rem;
             border-radius: 30px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             font-weight: 500;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 5px;
             width: 100%;
-            margin-top: 0.15rem;
+            margin-top: 0.25rem;
             font-family: 'IBM Plex Sans Arabic', sans-serif;
             cursor: default;
             opacity: 0.7;
@@ -580,6 +662,10 @@
             }
             .category-summary .summary-amount {
                 font-size: 1.4rem;
+            }
+            .pdf-modal-container {
+                width: 98%;
+                height: 95vh;
             }
         }
 
@@ -641,7 +727,7 @@
         </div>
     </div>
 
-    <!-- نافذة منبثقة -->
+    <!-- نافذة منبثقة للفئة -->
     <div class="modal-overlay" id="categoryModal">
         <div class="modal-container">
             <div class="modal-header">
@@ -649,6 +735,19 @@
                 <button class="close-modal" id="closeModalBtn">&times;</button>
             </div>
             <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- نافذة منبثقة لعرض PDF باستخدام iframe -->
+    <div class="pdf-modal-overlay" id="pdfModal">
+        <div class="pdf-modal-container">
+            <div class="pdf-modal-header">
+                <h3 id="pdfModalTitle">📄 عرض ملف التحويل</h3>
+                <button class="close-pdf-modal" id="closePdfModalBtn">&times;</button>
+            </div>
+            <div class="pdf-iframe-container">
+                <iframe id="pdfIframe" src="" title="معاينة ملف التحويل"></iframe>
+            </div>
         </div>
     </div>
 
@@ -963,6 +1062,37 @@
             modal.classList.remove('active');
         }
 
+        // دالة لعرض PDF في نافذة iframe منبثقة
+        function showPdfModal(pdfFileName, transferId, transferDate, transferAmount) {
+            const pdfModal = document.getElementById('pdfModal');
+            const pdfIframe = document.getElementById('pdfIframe');
+            const pdfModalTitle = document.getElementById('pdfModalTitle');
+            
+            // تعيين عنوان النافذة
+            pdfModalTitle.innerHTML = `📄 ملف التحويل - العملية #${transferId} | ${formatDate(transferDate)} | ${formatAmountInteger(transferAmount)}`;
+            
+            // تعيين رابط ملف PDF في الـ iframe
+            pdfIframe.src = `./${pdfFileName}`;
+            
+            // إظهار النافذة
+            pdfModal.classList.add('active');
+        }
+        
+        function closePdfModal() {
+            const pdfModal = document.getElementById('pdfModal');
+            const pdfIframe = document.getElementById('pdfIframe');
+            
+            // إخفاء النافذة
+            pdfModal.classList.remove('active');
+            
+            // تفريغ الـ iframe (اختياري - لتحرير الموارد)
+            setTimeout(() => {
+                if (!pdfModal.classList.contains('active')) {
+                    pdfIframe.src = '';
+                }
+            }, 300);
+        }
+
         function renderTransferCards() {
             const gridContainer = document.getElementById('transfersGrid');
             if (!gridContainer) return;
@@ -1020,26 +1150,27 @@
                 bottomRow.appendChild(dateSpan);
                 bottomRow.appendChild(categorySpan);
                 
-                // التحقق من وجود ملف PDF
+                // إضافة العناصر إلى الكارد بالترتيب المطلوب
+                card.appendChild(cardHeader);
+                card.appendChild(descDiv);
+                card.appendChild(bottomRow);
+                
+                // إضافة زر عرض الملف أو النص البديل في الأسفل
                 if (pdfFileName && pdfFileName !== null) {
-                    // إنشاء زر لفتح ملف PDF
-                    const fileBtn = document.createElement('a');
+                    const fileBtn = document.createElement('button');
                     fileBtn.className = 'file-button';
                     fileBtn.innerHTML = `📄 عرض ملف التحويل`;
-                    fileBtn.href = `./${pdfFileName}`;
-                    fileBtn.target = '_blank';
+                    fileBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showPdfModal(pdfFileName, id, date, amount);
+                    });
                     card.appendChild(fileBtn);
                 } else {
-                    // عرض نص يفيد بعدم وجود ملف
                     const noFileDiv = document.createElement('div');
                     noFileDiv.className = 'no-file-text';
                     noFileDiv.innerHTML = `📄 لا يوجد ملف حوالة`;
                     card.appendChild(noFileDiv);
                 }
-                
-                card.appendChild(cardHeader);
-                card.appendChild(descDiv);
-                card.appendChild(bottomRow);
                 
                 gridContainer.appendChild(card);
             });
@@ -1050,6 +1181,7 @@
         }
 
         function setupModalEvents() {
+            // أحداث نافذة الفئة
             const modal = document.getElementById('categoryModal');
             const closeBtn = document.getElementById('closeModalBtn');
             
@@ -1060,9 +1192,26 @@
                 }
             });
             
+            // أحداث نافذة PDF
+            const pdfModal = document.getElementById('pdfModal');
+            const closePdfBtn = document.getElementById('closePdfModalBtn');
+            
+            closePdfBtn.addEventListener('click', closePdfModal);
+            pdfModal.addEventListener('click', (e) => {
+                if (e.target === pdfModal) {
+                    closePdfModal();
+                }
+            });
+            
+            // إغلاق نوافذ modal بالضغط على Escape
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal.classList.contains('active')) {
-                    closeModal();
+                if (e.key === 'Escape') {
+                    if (modal.classList.contains('active')) {
+                        closeModal();
+                    }
+                    if (pdfModal.classList.contains('active')) {
+                        closePdfModal();
+                    }
                 }
             });
         }
