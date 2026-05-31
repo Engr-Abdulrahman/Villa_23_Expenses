@@ -490,6 +490,7 @@
             transform: scale(0.98);
         }
 
+        /* زر عرض الملف */
         .file-button {
             background: #102F32;
             border: 1px solid #2D9B87;
@@ -516,9 +517,24 @@
             transform: scale(0.98);
         }
 
-        /* إخفاء الزر إذا لم يكن هناك رابط */
-        .file-button.hidden {
-            display: none;
+        /* نص بديل عند عدم وجود ملف */
+        .no-file-text {
+            background: #1A1F2A;
+            border: 1px solid #4A3A2A;
+            color: #B89A7A;
+            padding: 0.4rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            width: 100%;
+            margin-top: 0.15rem;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            cursor: default;
+            opacity: 0.7;
         }
 
         .footer-company {
@@ -556,7 +572,7 @@
                 font-size: 0.85rem;
                 padding: 0.2rem 0.7rem;
             }
-            .file-button {
+            .file-button, .no-file-text {
                 font-size: 0.8rem;
             }
             .modal-header h3 {
@@ -644,7 +660,7 @@
             }
         }, 3100);
 
-        // *** تم إضافة حقل pdfFileName لكل حوالة بناءً على الجدول الذي قدمته ***
+        // البيانات الكاملة للتحويلات مع أسماء ملفات PDF
         const bankTransfers = [
             { id: 1, date: "2026-05-20", amount: 14731, description: "فواتير مشتريات", category: "مصروفات متفرقة", pdfFileName: null },
             { id: 2, date: "2026-05-20", amount: 5000, description: "اعمال حداده وسقالات", category: "رخام الواجهات", pdfFileName: null },
@@ -793,7 +809,7 @@
             { id: 145, date: "2025-02-25", amount: 8100, description: "عصافير زواجين تخصم من ابراهيم", category: "مصروفات متفرقة", pdfFileName: "00000063-Transaction-Receipt.pdf" },
             { id: 146, date: "2025-02-24", amount: 2805, description: "بنا 3300بلوكه الخزان السور البياره", category: "البناء", pdfFileName: "00000059-Transaction-Receipt.pdf" },
             { id: 147, date: "2025-02-23", amount: 4829, description: "اعمال عزل الخزان", category: "العزل", pdfFileName: "00000057-TransferReceipt.pdf" },
-            { id: 148, date: "2025-02-21", amount: 810, description: "عدد 60كيس أسمنت", category: "الأسمنت بانوعه", pdfFileName: "00000051-Transaction-Receipt.pdf" },
+            { id: 148, date: "2025-02-21", amount: 810, description: "عدد 60كيس أسمنت", category: "الأسمنت بانواعه", pdfFileName: "00000051-Transaction-Receipt.pdf" },
             { id: 149, date: "2025-02-21", amount: 550, description: "550ريال تريلا رمل", category: "الماء والرمل", pdfFileName: "00000052-Transaction-Receipt.pdf" },
             { id: 150, date: "2025-02-12", amount: 115, description: "تعديل بيانات التامين", category: "تعديلات", pdfFileName: "00000045-Transaction-Receipt.pdf" },
             { id: 151, date: "2025-02-11", amount: 1126, description: "تعديل الرخصه", category: "تعديلات", pdfFileName: null },
@@ -1004,27 +1020,26 @@
                 bottomRow.appendChild(dateSpan);
                 bottomRow.appendChild(categorySpan);
                 
-                // *** إنشاء زر العرض لملف PDF، وإخفاؤه إذا كان اسم الملف null ***
-                const fileBtn = document.createElement('a'); // استخدام <a> لفتح الرابط مباشرة
-                fileBtn.className = 'file-button';
-                fileBtn.innerHTML = `📄 عرض ملف التحويل`;
-                fileBtn.target = '_blank'; // فتح في تبويب جديد
-                
-                if (pdfFileName) {
-                    // بناء الرابط الصحيح لملف PDF في المستوى الرئيسي للمشروع
+                // التحقق من وجود ملف PDF
+                if (pdfFileName && pdfFileName !== null) {
+                    // إنشاء زر لفتح ملف PDF
+                    const fileBtn = document.createElement('a');
+                    fileBtn.className = 'file-button';
+                    fileBtn.innerHTML = `📄 عرض ملف التحويل`;
                     fileBtn.href = `./${pdfFileName}`;
+                    fileBtn.target = '_blank';
+                    card.appendChild(fileBtn);
                 } else {
-                    // إخفاء الزر إذا لم يوجد ملف PDF مرتبط
-                    fileBtn.classList.add('hidden');
-                    // جعل الزر غير قابل للنقر
-                    fileBtn.style.pointerEvents = 'none';
-                    fileBtn.style.opacity = '0.5';
+                    // عرض نص يفيد بعدم وجود ملف
+                    const noFileDiv = document.createElement('div');
+                    noFileDiv.className = 'no-file-text';
+                    noFileDiv.innerHTML = `📄 لا يوجد ملف حوالة`;
+                    card.appendChild(noFileDiv);
                 }
                 
                 card.appendChild(cardHeader);
                 card.appendChild(descDiv);
                 card.appendChild(bottomRow);
-                card.appendChild(fileBtn);
                 
                 gridContainer.appendChild(card);
             });
