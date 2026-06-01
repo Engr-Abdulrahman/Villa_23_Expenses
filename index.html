@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
     <title>فيلا 23 | التحويلات البنكية للمشروع</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- تحميل PDF.js من CDN الموثوق -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -249,7 +251,7 @@
             max-height: 65vh;
         }
 
-        /* نافذة منبثقة لعرض PDF */
+        /* نافذة منبثقة لعرض PDF باستخدام PDF.js */
         .pdf-modal-overlay {
             position: fixed;
             top: 0;
@@ -292,13 +294,47 @@
             align-items: center;
             border-bottom: 1px solid #2BBF9F;
             border-radius: 16px 16px 0 0;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .pdf-modal-header h3 {
             color: #F5D97A;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 700;
             font-family: 'IBM Plex Sans Arabic', sans-serif;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .pdf-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .pdf-nav-btn {
+            background: #1B5957;
+            border: 1px solid #2D9B87;
+            color: #C3FFF0;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .pdf-nav-btn:hover {
+            background: #2D9B87;
+            transform: scale(1.02);
+        }
+
+        .pdf-page-info {
+            color: #AEE6DC;
+            font-size: 0.75rem;
+            padding: 0 0.5rem;
         }
 
         .close-pdf-modal {
@@ -318,19 +354,31 @@
             transform: scale(1.1);
         }
 
-        .pdf-iframe-container {
+        .pdf-canvas-container {
             flex: 1;
-            padding: 0.5rem;
+            padding: 1rem;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
             background: #031012;
         }
 
-        .pdf-iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 8px;
+        .pdf-canvas-container canvas {
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
         }
-        
+
+        .pdf-loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #2BBF9F;
+            font-size: 1.2rem;
+        }
+
         /* ملخص الفئة داخل النافذة */
         .category-summary {
             background: linear-gradient(135deg, #0E2D35, #08232A);
@@ -667,6 +715,10 @@
                 width: 98%;
                 height: 95vh;
             }
+            .pdf-nav-btn {
+                padding: 0.2rem 0.5rem;
+                font-size: 0.7rem;
+            }
         }
 
         @media (max-width: 380px) {
@@ -738,20 +790,28 @@
         </div>
     </div>
 
-    <!-- نافذة منبثقة لعرض PDF باستخدام iframe -->
+    <!-- نافذة منبثقة لعرض PDF باستخدام PDF.js -->
     <div class="pdf-modal-overlay" id="pdfModal">
         <div class="pdf-modal-container">
             <div class="pdf-modal-header">
                 <h3 id="pdfModalTitle">📄 عرض ملف التحويل</h3>
-                <button class="close-pdf-modal" id="closePdfModalBtn">&times;</button>
+                <div class="pdf-controls">
+                    <button class="pdf-nav-btn" id="pdfPrevBtn">◀ السابق</button>
+                    <span class="pdf-page-info" id="pdfPageInfo">صفحة 0 / 0</span>
+                    <button class="pdf-nav-btn" id="pdfNextBtn">التالي ▶</button>
+                    <button class="close-pdf-modal" id="closePdfModalBtn">&times;</button>
+                </div>
             </div>
-            <div class="pdf-iframe-container">
-                <iframe id="pdfIframe" src="" title="معاينة ملف التحويل"></iframe>
+            <div class="pdf-canvas-container" id="pdfCanvasContainer">
+                <div class="pdf-loading">جاري تحميل الملف...</div>
             </div>
         </div>
     </div>
 
     <script>
+        // إعداد PDF.js - تعيين مسار العامل (worker)
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
         setTimeout(() => {
             const welcomeScreen = document.getElementById('welcomeScreen');
             if (welcomeScreen && welcomeScreen.parentNode) {
@@ -932,6 +992,13 @@
             { id: 169, date: "2024-09-15", amount: 3000, description: "دفعه للبوكلين", category: "حفر والدفن والمعدات", pdfFileName: "00000005-Transaction-Receipt.pdf" }
         ];
 
+        // متغيرات PDF.js العامة
+        let currentPdfDoc = null;
+        let currentPageNum = 1;
+        let totalPages = 0;
+        let currentCanvas = null;
+        let currentContext = null;
+
         // دالة لاستخراج الفئات الفريدة من البيانات
         function getUniqueCategories() {
             const categories = [...new Set(bankTransfers.map(t => t.category))];
@@ -1062,35 +1129,120 @@
             modal.classList.remove('active');
         }
 
-        // دالة لعرض PDF في نافذة iframe منبثقة
-        function showPdfModal(pdfFileName, transferId, transferDate, transferAmount) {
+        // دالة لعرض صفحة PDF باستخدام PDF.js
+        async function renderPdfPage(pageNum) {
+            if (!currentPdfDoc) return;
+            
+            try {
+                const page = await currentPdfDoc.getPage(pageNum);
+                const viewport = page.getViewport({ scale: 1.5 });
+                
+                // إنشاء عنصر canvas إذا لم يكن موجوداً
+                const container = document.getElementById('pdfCanvasContainer');
+                if (!currentCanvas) {
+                    container.innerHTML = '';
+                    const canvas = document.createElement('canvas');
+                    canvas.id = 'pdfCanvas';
+                    container.appendChild(canvas);
+                    currentCanvas = canvas;
+                    currentContext = canvas.getContext('2d');
+                }
+                
+                currentCanvas.width = viewport.width;
+                currentCanvas.height = viewport.height;
+                
+                const renderContext = {
+                    canvasContext: currentContext,
+                    viewport: viewport
+                };
+                
+                await page.render(renderContext).promise;
+                
+                // تحديث معلومات الصفحة
+                document.getElementById('pdfPageInfo').innerText = `صفحة ${pageNum} / ${totalPages}`;
+                
+                // تحديث حالة الأزرار
+                const prevBtn = document.getElementById('pdfPrevBtn');
+                const nextBtn = document.getElementById('pdfNextBtn');
+                prevBtn.disabled = (pageNum <= 1);
+                nextBtn.disabled = (pageNum >= totalPages);
+                prevBtn.style.opacity = (pageNum <= 1) ? '0.5' : '1';
+                nextBtn.style.opacity = (pageNum >= totalPages) ? '0.5' : '1';
+                
+            } catch (error) {
+                console.error('خطأ في عرض الصفحة:', error);
+                const container = document.getElementById('pdfCanvasContainer');
+                container.innerHTML = '<div class="pdf-loading">حدث خطأ أثناء عرض الملف</div>';
+                currentCanvas = null;
+            }
+        }
+        
+        function changePage(delta) {
+            const newPage = currentPageNum + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPageNum = newPage;
+                renderPdfPage(currentPageNum);
+            }
+        }
+        
+        // دالة لعرض PDF في نافذة منبثقة باستخدام PDF.js
+        async function showPdfModal(pdfFileName, transferId, transferDate, transferAmount) {
             const pdfModal = document.getElementById('pdfModal');
-            const pdfIframe = document.getElementById('pdfIframe');
             const pdfModalTitle = document.getElementById('pdfModalTitle');
+            const container = document.getElementById('pdfCanvasContainer');
+            
+            // إعادة تعيين المتغيرات
+            currentPdfDoc = null;
+            currentPageNum = 1;
+            totalPages = 0;
+            currentCanvas = null;
+            currentContext = null;
+            
+            // عرض رسالة تحميل
+            container.innerHTML = '<div class="pdf-loading">جاري تحميل الملف...</div>';
             
             // تعيين عنوان النافذة
             pdfModalTitle.innerHTML = `📄 ملف التحويل - العملية #${transferId} | ${formatDate(transferDate)} | ${formatAmountInteger(transferAmount)}`;
             
-            // تعيين رابط ملف PDF في الـ iframe
-            pdfIframe.src = `./${pdfFileName}`;
-            
             // إظهار النافذة
             pdfModal.classList.add('active');
+            
+            // بناء الرابط الكامل لملف PDF
+            const pdfUrl = `./${pdfFileName}`;
+            
+            try {
+                // تحميل ملف PDF باستخدام PDF.js
+                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                const pdf = await loadingTask.promise;
+                
+                currentPdfDoc = pdf;
+                totalPages = pdf.numPages;
+                currentPageNum = 1;
+                
+                // عرض الصفحة الأولى
+                await renderPdfPage(1);
+                
+            } catch (error) {
+                console.error('خطأ في تحميل PDF:', error);
+                container.innerHTML = '<div class="pdf-loading">❌ حدث خطأ في تحميل الملف. يرجى التأكد من وجود الملف.</div>';
+            }
         }
         
         function closePdfModal() {
             const pdfModal = document.getElementById('pdfModal');
-            const pdfIframe = document.getElementById('pdfIframe');
+            const container = document.getElementById('pdfCanvasContainer');
             
             // إخفاء النافذة
             pdfModal.classList.remove('active');
             
-            // تفريغ الـ iframe (اختياري - لتحرير الموارد)
-            setTimeout(() => {
-                if (!pdfModal.classList.contains('active')) {
-                    pdfIframe.src = '';
-                }
-            }, 300);
+            // تنظيف الموارد
+            if (currentPdfDoc) {
+                currentPdfDoc.destroy();
+                currentPdfDoc = null;
+            }
+            currentCanvas = null;
+            currentContext = null;
+            container.innerHTML = '<div class="pdf-loading">جاري تحميل الملف...</div>';
         }
 
         function renderTransferCards() {
@@ -1195,8 +1347,13 @@
             // أحداث نافذة PDF
             const pdfModal = document.getElementById('pdfModal');
             const closePdfBtn = document.getElementById('closePdfModalBtn');
+            const prevBtn = document.getElementById('pdfPrevBtn');
+            const nextBtn = document.getElementById('pdfNextBtn');
             
             closePdfBtn.addEventListener('click', closePdfModal);
+            prevBtn.addEventListener('click', () => changePage(-1));
+            nextBtn.addEventListener('click', () => changePage(1));
+            
             pdfModal.addEventListener('click', (e) => {
                 if (e.target === pdfModal) {
                     closePdfModal();
