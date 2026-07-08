@@ -104,6 +104,22 @@
             text-align: center;
         }
 
+        .login-company-title {
+            color: #2BBF9F;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .login-project-title {
+            color: #F5D97A;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 1.8rem;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
         .login-title {
             color: #EAF5F2;
             font-size: 1.1rem;
@@ -121,7 +137,7 @@
         .login-input {
             width: 100%;
             padding: 0.9rem 1.2rem;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             border: 2px solid #1C554B;
             border-radius: 12px;
             background: #031012;
@@ -240,6 +256,8 @@
         /* كارت إحصائي واحد */
         .stats-single {
             margin-bottom: 1.8rem;
+            border-bottom: 2px solid #1C554B;
+            padding-bottom: 1.2rem;
         }
 
         .stat-card-single {
@@ -750,6 +768,174 @@
             font-family: 'IBM Plex Sans Arabic', sans-serif;
         }
 
+        /* الزر العائم */
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2BBF9F, #1A8A75);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(43, 191, 159, 0.3);
+            cursor: pointer;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 500;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(43, 191, 159, 0.7);
+        }
+
+        .floating-btn:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 480px) {
+            .floating-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+                bottom: 20px;
+                left: 20px;
+            }
+        }
+
+        /* نافذة إحصائيات الأشهر */
+        .months-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .months-modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .months-modal-container {
+            background: #0A1E24;
+            border-radius: 16px;
+            width: 92%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #2BBF9F;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .months-modal-header {
+            background: #0E3D3F;
+            padding: 1rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2BBF9F;
+        }
+
+        .months-modal-header h3 {
+            color: #F5D97A;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .close-months-modal {
+            background: none;
+            border: none;
+            color: #E0F2F0;
+            font-size: 1.8rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            line-height: 1;
+            padding: 0 0.5rem;
+        }
+
+        .close-months-modal:hover {
+            color: #FF9F7C;
+            transform: scale(1.1);
+        }
+
+        .months-modal-body {
+            padding: 1.2rem;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+
+        .month-stat-card {
+            background: linear-gradient(135deg, #081C22, #0E2D35);
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid #1C554B;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .month-stat-card:hover {
+            border-color: #2BBF9F;
+            transform: translateX(-5px);
+            background: linear-gradient(135deg, #0E2D35, #08232A);
+        }
+
+        .month-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #F5D97A;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .month-stats {
+            text-align: left;
+            direction: ltr;
+        }
+
+        .month-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2BBF9F;
+            display: block;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .month-count {
+            font-size: 0.8rem;
+            color: #6ECFB9;
+            display: block;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+        }
+
+        .no-months-data {
+            text-align: center;
+            padding: 2rem;
+            color: #AEE6DC;
+        }
+
         /* تحسينات للجوال */
         @media (max-width: 480px) {
             body {
@@ -792,8 +978,26 @@
                 font-size: 0.95rem;
             }
             .login-input {
-                font-size: 1rem;
+                font-size: 1.2rem;
                 padding: 0.8rem 1rem;
+            }
+            .login-company-title {
+                font-size: 0.9rem;
+            }
+            .login-project-title {
+                font-size: 1.1rem;
+            }
+            .month-stat-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .month-stats {
+                text-align: right;
+                width: 100%;
+            }
+            .months-modal-container {
+                width: 95%;
             }
         }
 
@@ -807,14 +1011,17 @@
         }
         
         /* تخصيص شريط التمرير للنافذة */
-        .filtered-cards-grid::-webkit-scrollbar {
+        .filtered-cards-grid::-webkit-scrollbar,
+        .months-modal-body::-webkit-scrollbar {
             width: 4px;
         }
-        .filtered-cards-grid::-webkit-scrollbar-track {
+        .filtered-cards-grid::-webkit-scrollbar-track,
+        .months-modal-body::-webkit-scrollbar-track {
             background: #03181C;
             border-radius: 4px;
         }
-        .filtered-cards-grid::-webkit-scrollbar-thumb {
+        .filtered-cards-grid::-webkit-scrollbar-thumb,
+        .months-modal-body::-webkit-scrollbar-thumb {
             background: #2BBF9F;
             border-radius: 4px;
         }
@@ -841,11 +1048,13 @@
     <!-- شاشة الدخول -->
     <div class="login-screen" id="loginScreen">
         <div class="login-container">
+            <div class="login-company-title">شركة سكني للمقاولات</div>
+            <div class="login-project-title">مشروع فيلا 23</div>
             <div class="login-title">
                 🔐 برجاء إدخال كلمة الدخول<br>
                 للاطلاع على <span>البيانات البنكية للمشروع</span>
             </div>
-            <input type="password" class="login-input" id="loginInput" placeholder="كلمة الدخول" autocomplete="off">
+            <input type="text" class="login-input" id="loginInput" placeholder="كلمة الدخول" autocomplete="off">
             <button class="login-button" id="loginButton">🚪 دخول</button>
             <div class="login-error" id="loginError">للأسف كلمة الدخول غير صحيحة، برجاء المحاولة مجددا</div>
         </div>
@@ -869,6 +1078,20 @@
             <div class="footer-company">
                 شركة سكني للمقاولات العامة والعقارات
             </div>
+        </div>
+    </div>
+
+    <!-- الزر العائم -->
+    <button class="floating-btn" id="floatingBtn" style="display: none;">📊</button>
+
+    <!-- نافذة إحصائيات الأشهر -->
+    <div class="months-modal-overlay" id="monthsModal">
+        <div class="months-modal-container">
+            <div class="months-modal-header">
+                <h3>📊 إحصائيات الأشهر</h3>
+                <button class="close-months-modal" id="closeMonthsModalBtn">&times;</button>
+            </div>
+            <div class="months-modal-body" id="monthsModalBody"></div>
         </div>
     </div>
 
@@ -916,6 +1139,7 @@
         const loginError = document.getElementById('loginError');
         const mainContent = document.getElementById('mainContent');
         const loginScreen = document.getElementById('loginScreen');
+        const floatingBtn = document.getElementById('floatingBtn');
 
         function handleLogin() {
             const password = loginInput.value.trim();
@@ -924,6 +1148,7 @@
                 loginError.classList.remove('show');
                 loginScreen.classList.remove('active');
                 mainContent.style.display = 'block';
+                floatingBtn.style.display = 'flex';
                 // تهيئة البيانات بعد الدخول
                 init();
             } else {
@@ -1318,6 +1543,71 @@
             }, 300);
         }
 
+        // دالة عرض إحصائيات الأشهر
+        function showMonthsStats() {
+            const modal = document.getElementById('monthsModal');
+            const modalBody = document.getElementById('monthsModalBody');
+            
+            // تجميع البيانات حسب الشهر والسنة
+            const monthsData = {};
+            
+            bankTransfers.forEach(transfer => {
+                if (!transfer.date) return;
+                const dateParts = transfer.date.split('-');
+                if (dateParts.length !== 3) return;
+                const year = dateParts[0];
+                const month = dateParts[1];
+                const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 
+                                   'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+                const monthName = monthNames[parseInt(month) - 1];
+                const key = `${year}-${month}`;
+                
+                if (!monthsData[key]) {
+                    monthsData[key] = {
+                        year: year,
+                        month: month,
+                        monthName: monthName,
+                        total: 0,
+                        count: 0
+                    };
+                }
+                monthsData[key].total += transfer.amount;
+                monthsData[key].count += 1;
+            });
+            
+            // تحويل إلى مصفوفة وترتيبها من الأحدث إلى الأقدم
+            const sortedMonths = Object.values(monthsData).sort((a, b) => {
+                if (a.year !== b.year) return b.year - a.year;
+                return b.month - a.month;
+            });
+            
+            if (sortedMonths.length === 0) {
+                modalBody.innerHTML = '<div class="no-months-data">لا توجد بيانات شهرية متاحة</div>';
+            } else {
+                let html = '';
+                sortedMonths.forEach(monthData => {
+                    const formattedTotal = Math.floor(monthData.total).toLocaleString('en');
+                    html += `
+                        <div class="month-stat-card">
+                            <span class="month-name">📅 ${monthData.monthName} ${monthData.year}</span>
+                            <div class="month-stats">
+                                <span class="month-amount">${formattedTotal} SAR</span>
+                                <span class="month-count">${monthData.count} حوالة</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                modalBody.innerHTML = html;
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeMonthsModal() {
+            const modal = document.getElementById('monthsModal');
+            modal.classList.remove('active');
+        }
+
         function renderTransferCards() {
             const gridContainer = document.getElementById('transfersGrid');
             if (!gridContainer) return;
@@ -1428,6 +1718,20 @@
                 }
             });
             
+            // أحداث نافذة إحصائيات الأشهر
+            const monthsModal = document.getElementById('monthsModal');
+            const closeMonthsBtn = document.getElementById('closeMonthsModalBtn');
+            const floatingBtn = document.getElementById('floatingBtn');
+            
+            closeMonthsBtn.addEventListener('click', closeMonthsModal);
+            monthsModal.addEventListener('click', (e) => {
+                if (e.target === monthsModal) {
+                    closeMonthsModal();
+                }
+            });
+            
+            floatingBtn.addEventListener('click', showMonthsStats);
+            
             // إغلاق نوافذ modal بالضغط على Escape
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
@@ -1436,6 +1740,9 @@
                     }
                     if (pdfModal.classList.contains('active')) {
                         closePdfModal();
+                    }
+                    if (monthsModal.classList.contains('active')) {
+                        closeMonthsModal();
                     }
                 }
             });
