@@ -768,7 +768,7 @@
             font-family: 'IBM Plex Sans Arabic', sans-serif;
         }
 
-        /* الزر العائم */
+        /* الزر العائم - بدون توهج */
         .floating-btn {
             position: fixed;
             bottom: 30px;
@@ -778,21 +778,24 @@
             border-radius: 50%;
             background: linear-gradient(135deg, #2BBF9F, #1A8A75);
             color: white;
-            border: none;
-            box-shadow: 0 4px 15px rgba(43, 191, 159, 0.3);
+            border: 2px solid #3FE0C0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             cursor: pointer;
             font-size: 1.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             z-index: 500;
             font-family: 'IBM Plex Sans Arabic', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .floating-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 12px 35px rgba(43, 191, 159, 0.7);
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #3FE0C0, #2BBF9F);
+            border-color: #5CE6C8;
         }
 
         .floating-btn:active {
@@ -853,6 +856,7 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #2BBF9F;
+            flex-shrink: 0;
         }
 
         .months-modal-header h3 {
@@ -882,7 +886,7 @@
         .months-modal-body {
             padding: 1.2rem;
             overflow-y: auto;
-            max-height: 70vh;
+            flex: 1;
         }
 
         .month-stat-card {
@@ -895,11 +899,12 @@
             justify-content: space-between;
             align-items: center;
             transition: all 0.2s ease;
+            gap: 1rem;
         }
 
         .month-stat-card:hover {
             border-color: #2BBF9F;
-            transform: translateX(-5px);
+            transform: translateX(-3px);
             background: linear-gradient(135deg, #0E2D35, #08232A);
         }
 
@@ -908,11 +913,13 @@
             font-weight: 700;
             color: #F5D97A;
             font-family: 'IBM Plex Sans Arabic', sans-serif;
+            flex-shrink: 0;
         }
 
         .month-stats {
             text-align: left;
             direction: ltr;
+            flex-shrink: 0;
         }
 
         .month-amount {
@@ -987,17 +994,40 @@
             .login-project-title {
                 font-size: 1.1rem;
             }
-            .month-stat-card {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-            .month-stats {
-                text-align: right;
-                width: 100%;
-            }
+            
+            /* تحسين نافذة إحصائيات الأشهر للجوال */
             .months-modal-container {
                 width: 95%;
+                max-height: 90vh;
+            }
+            
+            .month-stat-card {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0.9rem 1rem;
+                gap: 0.5rem;
+            }
+            
+            .month-name {
+                font-size: 0.95rem;
+                text-align: center;
+            }
+            
+            .month-stats {
+                text-align: center;
+                direction: ltr;
+            }
+            
+            .month-amount {
+                font-size: 1rem;
+            }
+            
+            .month-count {
+                font-size: 0.75rem;
+            }
+            
+            .months-modal-header h3 {
+                font-size: 1rem;
             }
         }
 
@@ -1007,6 +1037,15 @@
             }
             .desc-value {
                 font-size: 0.95rem;
+            }
+            .month-stat-card {
+                padding: 0.7rem 0.8rem;
+            }
+            .month-name {
+                font-size: 0.85rem;
+            }
+            .month-amount {
+                font-size: 0.9rem;
             }
         }
         
