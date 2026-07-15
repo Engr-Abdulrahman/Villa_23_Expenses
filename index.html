@@ -1407,7 +1407,13 @@
             { id: 188, date: "2024-09-27", amount: 7000, description: "دفعه ثانية بوكلين", category: "حفر والدفن والمعدات", pdfFileName: "00000017-Transaction-Receipt.pdf" },
             { id: 189, date: "2024-09-27", amount: 1810, description: "سور الزنك", category: "شراء الأرض وتجهيزها والخدمات", pdfFileName: "00000018-TransferReceipt.pdf" },
             { id: 190, date: "2024-09-21", amount: 6110, description: "ترحيل 47 تريلا", category: "حفر والدفن والمعدات", pdfFileName: "00000008-TransferReceipt.pdf" },
-            { id: 191, date: "2024-09-15", amount: 3000, description: "دفعه للبوكلين", category: "حفر والدفن والمعدات", pdfFileName: "00000005-Transaction-Receipt.pdf" }
+            { id: 191, date: "2024-09-15", amount: 3000, description: "دفعه للبوكلين", category: "حفر والدفن والمعدات", pdfFileName: "00000005-Transaction-Receipt.pdf" },
+            // البيانات الجديدة المضافة (ID: 192 إلى 197)
+            { id: 192, date: "2026-07-11", amount: 2000, description: "دفعة من اعمال العزل للحمامات والمسبح", category: "العزل", pdfFileName: "TransferReceipt-2.pdf" },
+            { id: 193, date: "2026-07-11", amount: 15000, description: "دفعة لأعمال خزائن غرف النوم", category: "الالمنيوم", pdfFileName: "Transaction-Receipt-6.pdf" },
+            { id: 194, date: "2026-07-12", amount: 8437, description: "مشتريات كهرباء لشركة قواعد الانماء", category: "الكهرباء", pdfFileName: "Transaction-Receipt-7.pdf" },
+            { id: 195, date: "2026-07-13", amount: 1313.97, description: "احواض مغاسل الرخام", category: "اللامنيوم ,مطابخ", pdfFileName: "TransferReceipt-3.pdf" },
+            { id: 196, date: "2026-07-14", amount: 15000, description: "دفعه لاعمال الجبس البلدي دفعت كاش", category: "جبس بلدي", pdfFileName: "Transaction-Receipt-8.pdf" }
         ];
 
         // دالة لاستخراج الفئات الفريدة من البيانات
@@ -1653,7 +1659,10 @@
             if (!gridContainer) return;
             gridContainer.innerHTML = '';
 
-            bankTransfers.forEach((transfer, idx) => {
+            // ترتيب البيانات من الأحدث إلى الأقدم (تنازلي حسب id)
+            const sortedTransfers = [...bankTransfers].sort((a, b) => b.id - a.id);
+
+            sortedTransfers.forEach((transfer) => {
                 const card = document.createElement('div');
                 card.className = 'transfer-card';
                 
